@@ -62,6 +62,22 @@ public class LL {
         return val;
     }
 
+    //Insert using recursion
+    public void insertRecursion(int val, int index){
+        head = insertRecursion(val, index, head);
+    }
+
+    private Node insertRecursion(int val, int index, Node node){
+        if(index == 0){
+            Node temp = new Node(val, node);
+            size++;
+            return temp;
+        }
+
+        node.next = insertRecursion(val, index - 1, node.next);
+        return node;
+    }
+
     public int deleteLast(){
         if(size <= 1){
             return deleteFirst();
@@ -129,5 +145,139 @@ public class LL {
             this.value = value;
             this.next = next;
         }
+    }
+
+    //Questions
+    public void duplicates(){
+        Node node = head;
+        while(node.next != null){
+            if(node.value == node.next.value){
+                node.next = node.next.next;
+                size--;
+            }
+            else{
+                node = node.next;
+            }
+        }
+        tail = node;
+        tail.next = null;
+    }
+
+    //Merge
+    public static LL merge(LL first, LL second){
+        Node first_head = first.head;
+        Node second_head = second.head;
+        LL ans = new LL();
+        while(first_head != null && second_head != null){
+            if(first_head.value < second_head.value){
+                ans.insertLast(first_head.value);
+                first_head = first_head.next;
+            }else {
+                ans.insertLast(second_head.value);
+                second_head = second_head.next;
+            }
+        }
+
+        while(first_head != null){
+            ans.insertLast(first_head.value);
+            first_head = first_head.next;
+        }
+
+        while(second_head != null){
+            ans.insertLast(second_head.value);
+            second_head = second_head.next;
+        }
+
+        return ans;
+    }
+
+    public void bubbleSort() {
+        bubbleSort(size - 1, 0);
+    }
+
+    private void bubbleSort(int row, int col) {
+        if (row == 0) {
+            return;
+        }
+
+        if (col < row) {
+            Node first = get(col);
+            Node second = get(col + 1);
+
+            if (first.value > second.value) {
+                // swap
+                if (first == head) {
+                    head = second;
+                    first.next = second.next;
+                    second.next = first;
+                } else if (second == tail) {
+                    Node prev = get(col - 1);
+                    prev.next = second;
+                    tail = first;
+                    first.next = null;
+                    second.next = tail;
+                } else {
+                    Node prev = get(col - 1);
+                    prev.next = second;
+                    first.next = second.next;
+                    second.next = first;
+                }
+            }
+            bubbleSort(row, col + 1);
+        } else {
+            bubbleSort(row - 1, 0);
+        }
+    }
+
+    // recursion reverse
+    private void reverse(Node node) {
+        if (node == tail) {
+            head = tail;
+            return;
+        }
+        reverse(node.next);
+        tail.next = node;
+        tail = node;
+        tail.next = null;
+    }
+
+    // in place reversal of linked list
+    // google, microsoft, apple, amazon: https://leetcode.com/problems/reverse-linked-list/
+    public void reverse() {
+        if (size < 2) {
+            return;
+        }
+
+        Node prev = null;
+        Node present = head;
+        Node next = present.next;
+
+        while (present != null) {
+            present.next = prev;
+            prev = present;
+            present = next;
+            if (next != null) {
+                next = next.next;
+            }
+        }
+        head = prev;
+    }
+
+    public static void main(String[] args) {
+        LL first = new LL();
+        LL second = new LL();
+        first.insertLast(7896);
+        first.insertLast(6);
+        first.insertLast(78);
+        second.insertLast(1);
+        second.insertLast(56);
+        second.insertLast(9);
+        second.insertLast(4);
+
+        LL ans = LL.merge(first, second);
+        ans.display();
+
+        ans.bubbleSort();
+        ans.display();
     }
 }
