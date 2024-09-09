@@ -137,9 +137,229 @@ public class CycleQuestion {
         return s;
     }
 
-//    public static void main(String[] args) {
-//        int[] nums = {1, 2, 3};
-//        ListNode head;
-//        head
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if(left == right){
+            return head;
+        }
+
+        //skip the first left - 1 node;
+        ListNode current = head;
+        ListNode previous = null;
+        for (int i = 0; current != null && i < left - 1; i++) {
+            previous = current;
+            current = current.next;
+        }
+
+        ListNode last = previous;
+        ListNode newEnd = current;
+
+        //Reverse between left & right;
+        ListNode next = current.next;
+        for (int i = 0; current != null && i < right -left + 1; i++) {
+            current.next = previous;
+            previous = current;
+            current = next;
+            if (next != null) {
+                next = next.next;
+            }
+        }
+
+        if(last != null){
+            last.next = previous;
+        }else {
+            head = previous;
+        }
+        newEnd.next = current;
+        return head;
+    }
+
+    public ListNode reverseList(ListNode head) {
+        if(head == null){
+            return head;
+        }
+
+        ListNode prev = null;
+        ListNode present = head;
+        ListNode next = present.next;
+
+        while (present != null) {
+            present.next = prev;
+            prev = present;
+            present = next;
+            if (next != null) {
+                next = next.next;
+            }
+        }
+        return prev;
+    }
+
+    public boolean isPalindrome(ListNode head) {
+        ListNode mid = middleNode(head);
+        ListNode headSecond = reverseList(mid);
+        ListNode rereverseHead = headSecond;
+
+        // Compare both the halves
+        while(head != null && headSecond != null){
+            if(head.val != headSecond.val){
+                break;
+            }
+            head = head.next;
+            headSecond = headSecond.next;
+        }
+        reverseList(rereverseHead);
+
+        return head == null || headSecond == null;
+    }
+
+    public void reorderList(ListNode head) {
+        if(head == null || head.next == null){
+            return;
+        }
+
+        ListNode mid = middleNode(head);
+        ListNode headSecond = reverseList(mid);
+        ListNode headFirst = head;
+
+        //rearrange
+        while(headFirst != null && headSecond != null){
+            ListNode temp = headFirst.next;
+            headFirst.next = headSecond;
+            headFirst = temp;
+            temp = headSecond.next;
+            headSecond.next = headFirst;
+            headSecond = temp;
+        }
+
+        if(headFirst != null){
+            headFirst.next = null;
+        }
+    }
+
+    public ListNode reverseKGroup(ListNode head, int k) {
+
+        if(k == 1 || head == null){
+            return head;
+        }
+
+        ListNode prev = null;
+        ListNode current = head;
+
+        int remaininglength = listLength(head);
+
+        while(remaininglength >= k){
+
+            ListNode last = prev;
+            ListNode newEnd = current;
+
+            ListNode next = current.next;
+
+            for(int i = 0; (current != null) && i < k; i++){
+                current.next = prev;
+                prev = current;
+                current = next;
+                next = (next != null) ? next.next : next;
+            }
+
+            if(last == null){
+                head = prev;
+            } else{
+                last.next = prev;
+            }
+
+            newEnd.next = current;
+            prev = newEnd;
+
+            remaininglength = remaininglength - k;
+        }
+        return head;
+    }
+
+    //finding the length of the List
+    public int listLength(ListNode head){
+        if(head == null){
+            return 0;
+        }
+
+        ListNode temp = head;
+        int length = 0;
+
+        while(temp != null){
+            length += 1;
+            temp = temp.next;
+        }
+        return length;
+    }
+
+    // https://www.geeksforgeeks.org/reverse-alternate-k-nodes-in-a-singly-linked-list/
+    public ListNode reverseAlternateKGroup(ListNode head, int k) {
+        if (k <= 1 || head == null) {
+            return head;
+        }
+
+        // skip the first left-1 nodes
+        ListNode current = head;
+        ListNode prev = null;
+
+        while (current != null) {
+            ListNode last = prev;
+            ListNode newEnd = current;
+
+            // reverse between left and right
+            ListNode next = current.next;
+            for (int i = 0; current != null && i < k; i++) {
+                current.next = prev;
+                prev = current;
+                current = next;
+                if (next != null) {
+                    next = next.next;
+                }
+            }
+
+            if (last != null) {
+                last.next = prev;
+            } else {
+                head = prev;
+            }
+
+            newEnd.next = current;
+
+            // skip the k nodes
+            for (int i = 0; current != null && i < k; i++) {
+                prev = current;
+                current = current.next;
+            }
+        }
+        return head;
+    }
+
+    // FaceBook, Twitter, Google: https://leetcode.com/problems/rotate-list/
+    public ListNode rotateRight(ListNode head, int k) {
+        if (k <= 0 || head == null || head.next == null) {
+            return head;
+        }
+
+        ListNode last = head;
+        int length = 1;
+        while (last.next != null) {
+            last = last.next;
+            length++;
+        }
+
+        last.next = head;
+        int rotations = k % length;
+        int skip = length - rotations;
+        ListNode newLast = head;
+        for (int i = 0; i < skip - 1; i++) {
+            newLast = newLast.next;
+        }
+        head = newLast.next;
+        newLast.next = null;
+
+        return head;
+    }
+
+//    public void main(String[] args) {
+//        ListNode head = new ListNode();
+//        head.
 //    }
 }
